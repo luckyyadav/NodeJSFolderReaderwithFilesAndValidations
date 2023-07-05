@@ -1,30 +1,45 @@
 const fs = require("fs");
 const readline = require("readline");
 const HelperFxn = require("./helper")
-//const fileStream = fs.createReadStream("./input/Typescript_OC9KBG959KH95A3K.txt");
+const fileStream = fs.createReadStream("./input/Typescript_OC9KBG959KH95A3K.txt");
 
-
-
-fs.readdir('./input', function(err, files) {
-  if (err) {
-    console.log(err);
-    return;
-  }
-
-  files.forEach(function(file) {   
-    ReadEachFiles(file)
-  });
-});
-
-
-
-
-function ReadEachFiles(file){
-
+function ReadEachFiles(){
 const rl = readline.createInterface({
-  input: fs.createReadStream("./input/"+file),
+  input: fileStream,
   crlfDelay: Infinity,
 });
+
+ /* Category section */
+
+ let additionalInfoReading = false;
+ let additionalInfoBlock = "";
+ let additionalInfoSection = [];
+ 
+ // Desired additionalInfo Block
+  rl.on("line", (line) => {
+   if (line.includes("Additional Info Start")) {
+     additionalInfoReading = true;
+     return;
+   }
+ 
+   if (line.includes("Additional Info End")) {
+     additionalInfoReading = false;
+     HelperFxn.additionalInfoValidation(additionalInfoSection)
+     
+     rl.close();
+     return;
+   }
+   if (additionalInfoReading) {
+     if(line != ""){
+       additionalInfoBlock+=line;
+       additionalInfoSection.push(additionalInfoBlock); 
+     }
+   }
+ 
+ });
+
+
+/* Question Block */
 
 let starQuestiontReading = false;
 let QuestionBlock = "";

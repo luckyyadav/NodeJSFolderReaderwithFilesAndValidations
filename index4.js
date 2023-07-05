@@ -3,6 +3,7 @@ const readline = require('readline');
 const path = require('path');
 const HelperFxn = require("./helper")
 
+
 // Define the folder path
 const folderPath = './input';
 
@@ -45,6 +46,37 @@ fs.readdir(folderPath, (err, files) => {
 
 
 function ReadEachFiles(rl, fileName){ 
+
+  /* Category section */
+
+  let additionalInfoReading = false;
+  let additionalInfoBlock = "";
+  let additionalInfoSection = [];
+  
+  // Desired additionalInfo Block
+   rl.on("line", (line) => {
+    if (line.includes("Additional Info Start")) {
+      additionalInfoReading = true;
+      return;
+    }
+  
+    if (line.includes("Additional Info End")) {
+      additionalInfoReading = false;
+      HelperFxn.additionalInfoValidation(additionalInfoSection, fileName)
+      
+      rl.close();
+      return;
+    }
+    if (additionalInfoReading) {
+      if(line != ""){
+        additionalInfoBlock+=line;
+        additionalInfoSection.push(additionalInfoBlock); 
+      }
+    }
+  
+  });
+
+/* Question Block */
   
   let starQuestiontReading = false;
   let QuestionBlock = "";
@@ -60,6 +92,7 @@ function ReadEachFiles(rl, fileName){
     if (line.includes("Desired Question End")) {
       starQuestiontReading = false;
       HelperFxn.desiredQuestionValidation(QuestionSection, fileName)
+      
       rl.close();
       return;
     }
